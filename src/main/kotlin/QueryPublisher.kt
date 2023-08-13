@@ -148,40 +148,43 @@ class Route(sql: String, private val template: String) {
         .toList()
 
     fun run(path: String, connection: Connection, params: Map<String, String?>) =
-        generateSequence(
-            connection
-                .prepareStatement(paramSql)
-                .also { ps ->
-                    // TODO Cache prepared statement metadata
-                    paramNames.forEach { (index, name) ->
-                        val paramValue = params[name]?.let { value ->
-                            val converter = classMapper[ps.metaData.getColumnClassName(index)] ?: { it }
-                            converter(value)
-                        }
-                        if (paramValue != null) {
-                            ps.setObject(index, paramValue)
-                        } else {
-                            ps.setNull(index, ps.metaData.getColumnType(index))
+        // TODO Add connection pooling
+        synchronized(connection) {
+            generateSequence(
+                connection
+                    .prepareStatement(paramSql)
+                    .also { ps ->
+                        // TODO Cache prepared statement metadata
+                        paramNames.forEach { (index, name) ->
+                            val paramValue = params[name]?.let { value ->
+                                val converter = classMapper[ps.metaData.getColumnClassName(index)] ?: { it }
+                                converter(value)
+                            }
+                            if (paramValue != null) {
+                                ps.setObject(index, paramValue)
+                            } else {
+                                ps.setNull(index, ps.metaData.getColumnType(index))
+                            }
                         }
                     }
+                    .executeQuery()
+                    .let { rs ->
+                        val colNames = (1..rs.metaData.columnCount)
+                            .map { index -> rs.metaData.getColumnLabel(index) }
+                        Pair(rs, colNames)
+                    }
+            ) { it }
+                .takeWhile { (rs, _) -> rs.next() }
+                .map { (rs, colNames) ->
+                    colNames.associate { colName ->
+                        colName.lowercase() to rs.getObject(colName)
+                    }
                 }
-                .executeQuery()
-                .let { rs ->
-                    val colNames = (1..rs.metaData.columnCount)
-                        .map { index -> rs.metaData.getColumnLabel(index) }
-                    Pair(rs, colNames)
+                .toList()
+                .let { rows ->
+                    val model = params + Pair("rows", rows)
+                    // TODO Compile template at startup
+                    Pug4J.render(StringReader(template), path, model)!!
                 }
-        ) { it }
-            .takeWhile { (rs, _) -> rs.next() }
-            .map { (rs, colNames) ->
-                colNames.associate { colName ->
-                    colName.lowercase() to rs.getObject(colName)
-                }
-            }
-            .toList()
-            .let { rows ->
-                val model = params + Pair("rows", rows)
-                // TODO Compile template at startup
-                Pug4J.render(StringReader(template), path, model)!!
-            }
+        }
 }
