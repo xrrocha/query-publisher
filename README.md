@@ -1,7 +1,6 @@
 # Query Publisher
 
-Define your queries in SQL and publish them on the web via Pug templates.
-All inside a simple Yaml file:
+Define your queries in SQL and publish them on the web via Pug templates:
 
 ```yaml
 port: 1960
@@ -9,20 +8,15 @@ pageHeader:
   content: |
     # Emp & Dept
     ![Emp & Dept](logo.png)
-  
     This webapp allows you to peruse the time-honored `emp-dept` SQL schema.
-  
     Enjoy!
-
 routes:
   "depts":
     sql: |
       SELECT * FROM dept ORDER BY deptno
     template: |
       table
-        caption
-          span Departments
-          hr
+        caption Departments
         tr
           th Code
           th Name
@@ -32,19 +26,16 @@ routes:
             td #{row.deptno}
             td #{row.dname}
             td #{row.loc}
-
 database:
   className: 'org.h2.Driver'
   url: 'jdbc:h2:mem:test'
   user: sa
-  password:
   initScript: |
     create table dept (
       deptno integer     not null primary key,
       dname  varchar(14) not null,
       loc    varchar(13) null
     );
-  
     create table emp (
       empno    integer       not null  primary key,
       ename    varchar(10)   not null,
@@ -55,13 +46,11 @@ database:
       comm     numeric(7, 2),
       deptno   integer       not null   references dept
     );
-  
     insert into dept
       values (10, 'ACCOUNTING', 'NEW YORK'),
              (20, 'RESEARCH', 'DALLAS'),
              (30, 'SALES', 'CHICAGO'),
              (40, 'OPERATIONS', 'BOSTON');
-  
     insert into emp
     values (7839, 'KING', 'PRESIDENT', null, '2011-11-17', 15000, null, 10),
            (7566, 'JONES', 'MANAGER', 7839, '2011-04-02', 14875, null, 20),
@@ -77,5 +66,4 @@ database:
            (7900, 'JAMES', 'CLERK', 7698, '2011-12-03', 4750, null, 30),
            (7782, 'CLARK', 'MANAGER', 7839, '2011-06-09', 12250, null, 10),
            (7934, 'MILLER', 'CLERK', 7782, '2012-01-23', 6500, null, 10);
-  
 ```
