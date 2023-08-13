@@ -25,19 +25,41 @@ routes:
           th Code
           th Name
           th Location
+          th Employees
         for row in rows
           tr
             td #{row.deptno}
             td #{row.dname}
             td #{row.loc}
-
+            td #[a(href=`dept_emps?deptno=${row.deptno}&dname=${row.dname}`) View]
   "emps":
     sql: |
       SELECT * FROM emp ORDER BY empno
-    template: |
+    template: &empTemplate |
       table(style='margin: 0 auto;')
         caption
           span Employees
+          hr
+        tr
+          th Code
+          th Name
+          th Salary
+        for row in rows
+          tr
+            td #{row.empno}
+            td #{row.ename}
+            td #{row.sal}
+  "dept_emps":
+    sql: |
+      SELECT *
+      FROM emp
+      WHERE deptno = :deptno
+      ORDER BY empno
+    # TODO template: *empTemplate
+    template: |
+      table(style='margin: 0 auto;')
+        caption(style='white-space: nowrap;')
+          span Employees for #{dname}
           hr
         tr
           th Code
