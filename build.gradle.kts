@@ -31,5 +31,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("querypublisher.MainKt")
 }
