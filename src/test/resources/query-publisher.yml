@@ -31,6 +31,24 @@ routes:
             td #{row.dname}
             td #{row.loc}
 
+  "emps":
+    sql: |
+      SELECT * FROM emp ORDER BY empno
+    template: |
+      table(style='margin: 0 auto;')
+        caption
+          span Employees
+          hr
+        tr
+          th Code
+          th Name
+          th Salary
+        for row in rows
+          tr
+            td #{row.empno}
+            td #{row.ename}
+            td #{row.sal}
+
 database:
   className: 'org.h2.Driver'
   url: 'jdbc:h2:mem:test'
@@ -58,7 +76,8 @@ database:
       values (10, 'ACCOUNTING', 'NEW YORK'),
              (20, 'RESEARCH', 'DALLAS'),
              (30, 'SALES', 'CHICAGO'),
-             (40, 'OPERATIONS', 'BOSTON');
+             (40, 'OPERATIONS', 'BOSTON'),
+             (50, 'IT', 'QUITO');
   
     insert into emp
     values (7839, 'KING', 'PRESIDENT', null, '2011-11-17', 15000, null, 10),
