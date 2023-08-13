@@ -1,6 +1,6 @@
 # Query Publisher
 
-Define your queries in SQL and publish them on the web via Pug templates:
+Define your queries in SQL and publish them on the web with simple Pug templates:
 
 ```yaml
 port: 1960
