@@ -12,10 +12,13 @@ port: 1960
 pageHeader:
   title: Emp & Dept Galore!
   content: |
-    img(style='float: left;', src='logo.png')
-    h1(style='text-align: center; color: navy') Emp & Dept
+    img(src='logo.png', style='float: left;')
+    h1(style='text-align: center; color: navy')
+      Emp & Dept
     br(style='clear: both')
-    p This webapp allows you to peruse the time-honored #[code scott/tiger] SQL schema. 
+    p.
+      This webapp allows you to peruse the time-honored
+      #[code scott/tiger] SQL schema. 
     p Enjoy!
 routes:
   depts:
