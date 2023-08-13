@@ -7,7 +7,7 @@ Show [off] this:
 
 ![Department List](docs/img/dept-list.png)
 
-with just this:
+with [just] this:
 ```yaml
 port: 1960
 pageHeader:
