@@ -1,8 +1,9 @@
 # Query Publisher
 
-Publish your SQL queries on the web with simple Pug templates!
+Publish your SQL queries on the web with simple Pug templates.
+No programming required! 😀💃
 
-Display this:
+Show [off] this:
 
 ![Department List](docs/img/dept-list.png)
 
@@ -13,7 +14,7 @@ pageHeader:
   title: Emp & Dept Galore!
   content: |
     img(src='logo.png', style='float: left;')
-    h1(style='text-align: center; color: navy')
+    h1(style='text-align: center; color: navy').
       Emp & Dept
     br(style='clear: both')
     p.
