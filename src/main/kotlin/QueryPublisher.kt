@@ -11,19 +11,18 @@ import java.io.StringReader
 import java.sql.Connection
 import java.sql.DriverManager
 
-class WebServer(
+class QueryPublisher(
     private val port: Int = 1960,
     database: Database,
     pageHeader: PageHeader,
     assetsDir: String = ".",
-    private val routes: Map<String, Route>
+    routes: Map<String, Route>
 ) {
     private val assetsDirectory = File(assetsDir)
         .also { require(it.isDirectory && it.canRead()) }
-    private val rootPageContent = pageHeader.toHtml()
     private val connection = database.connect()
 
-    fun start(): Javalin =
+    private val javalin =
         Javalin
             .create { config ->
                 config.staticFiles.add { staticFiles ->
@@ -33,40 +32,68 @@ class WebServer(
                 }
             }
             .apply {
-                get("/") { ctx -> ctx.html(rootPageContent) }
+                get("/") { ctx -> ctx.html(pageHeader.htmlContent) }
                 routes.forEach { (path, route) ->
                     get("/$path") { ctx ->
-                        ctx.html(route.run(connection, emptyMap()/*ctx.queryParamMap()*/))
+                        ctx.html(
+                            """
+                            <html>
+                            <head>
+                                <title>${pageHeader.title}</title>
+                            </head>
+                            <body>
+                                ${pageHeader.htmlContent}
+                                <hr>
+                                <br>
+                                ${route.run(connection, emptyMap()/*ctx.queryParamMap()*/)}
+                            </body>
+                            </html>
+                            """.trimIndent()
+                        )
                     }
                 }
-                start(port)
             }
+
+
+    fun start() {
+        javalin.start(port)
+    }
+
+    fun stop() {
+        javalin.stop()
+    }
 }
 
 enum class MarkupLanguage {
-    MARKDOWN {
+    markdown {
         private val flavour = CommonMarkFlavourDescriptor()
         private val compile = { pageHeader: String ->
             val parsedTree =
                 MarkdownParser(flavour).buildMarkdownTreeFromString(pageHeader)
-            HtmlGenerator(pageHeader, parsedTree, flavour).generateHtml()
+            HtmlGenerator(pageHeader, parsedTree, flavour)
+                .generateHtml()
+                .removeSurrounding("<body>", "</body>")
         }
 
         override fun toHtml(source: String): String = compile(source)
     },
-    PUG {
+    pug {
         override fun toHtml(source: String): String =
             Pug4J.render(StringReader(source), "", emptyMap())
+    },
+    html {
+        override fun toHtml(source: String): String = source
     };
 
     abstract fun toHtml(source: String): String
 }
 
 class PageHeader(
-    private val content: String,
-    private val language: MarkupLanguage = MarkupLanguage.MARKDOWN,
+    val title: String,
+    content: String,
+    language: MarkupLanguage = MarkupLanguage.pug,
 ) {
-    fun toHtml() = language.toHtml(content)
+    val htmlContent = language.toHtml(content)
 }
 
 class Database(
