@@ -40,6 +40,7 @@ routes:
             td #{row.loc}
 database:
   className: 'org.h2.Driver'
-  url: 'jdbc:h2:mem:test'
-  user: sa
+  url: 'jdbc:h2:mem:empdept'
+  user: scott
+  password: tiger
 ```
