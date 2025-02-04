@@ -40,6 +40,7 @@ class QueryPublisher(
                             <html>
                             <head>
                                 <title>${pageHeader.title}</title>
+                                <meta charset="utf-8">
                             </head>
                             <body>
                                 ${pageHeader.htmlContent}
