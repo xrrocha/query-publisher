@@ -12,10 +12,10 @@ repositories {
 }
 
 dependencies {
-    implementation("io.javalin:javalin:5.6.2")
+    implementation("io.javalin:javalin:6.4.0")
     implementation("com.h2database:h2:2.2.220")
     implementation("org.jetbrains:markdown:0.5.0")
-    implementation("de.neuland-bfi:pug4j:2.0.6")
+    implementation("de.neuland-bfi:pug4j:2.3.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
     implementation("org.slf4j:slf4j-simple:2.0.7")
@@ -27,7 +27,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(19)
 }
 
 application {
